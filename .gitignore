@@ -1,0 +1,36 @@
+# Python virtual environment directories and files
+venv/
+.venv/
+env/
+.env/
+bin/
+lib/
+lib64/
+pyvenv.cfg
+include/
+share/
+
+# Python compiled files and environment artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+.Python
+build/
+dist/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
+
+# Data and logs (adjust if you DO want to track specific data/logs)
+data/
+logs/
+*.log
+*.csv
+*.txt
