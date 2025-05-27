@@ -10,6 +10,9 @@ pyvenv.cfg
 include/
 share/
 
+# Dataset fies
+datasets/
+
 # Python compiled files and environment artifacts
 __pycache__/
 *.pyc
