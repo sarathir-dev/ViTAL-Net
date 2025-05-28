@@ -5,6 +5,7 @@ import torch.nn as nn
 from torchvision import transforms
 from models.vitalnet import ViTALNet
 from utils.dataset_loader import get_dataloaders
+from utils.metrics import evaluate_model
 from config import DATA_PATH, NUM_EPOCHS, LR, BATCH_SIZE, DEVICE
 
 transform = transforms.Compose([
@@ -49,3 +50,5 @@ for epoch in range(NUM_EPOCHS):
 
 torch.save(model.state_dict(), "./models/vitalnet.pth")
 print("Model training complete.")
+
+evaluate_model(model, val_loader, DEVICE)
