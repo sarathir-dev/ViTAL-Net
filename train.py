@@ -2,11 +2,9 @@
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from torchvision import transforms, datasets
+from torchvision import transforms
 from models.vitalnet import ViTALNet
 from utils.dataset_loader import get_dataloaders
-from utils.metrics import evaluate_model
 from config import DATA_PATH, NUM_EPOCHS, LR, BATCH_SIZE, DEVICE
 
 transform = transforms.Compose([
@@ -16,7 +14,7 @@ transform = transforms.Compose([
 ])
 
 train_loader, val_loader = get_dataloaders(
-    root_dir="./data/violence_dataset/hockey_fight",
+    root_dir=DATA_PATH,
     batch_size=BATCH_SIZE,
     transform=transform
 )
