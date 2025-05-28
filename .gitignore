@@ -36,5 +36,4 @@ data/
 logs/
 *.log
 *.csv
-*.txt
 lib64
