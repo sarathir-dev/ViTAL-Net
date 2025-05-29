@@ -5,42 +5,53 @@ import torch.nn as nn
 
 
 class Generator(nn.Module):
-    def __init__(self, noise_dim=100, class_dim=2, img_size=128):
-        super(Generator, self).__init__()
-        self.fc = nn.Sequential(
-            nn.Linear(noise_dim + class_dim, 256),
-            nn.ReLU(),
-            nn.Linear(256, 512),
-            nn.ReLU(),
-            nn.Linear(512, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 3 * img_size * img_size),
+    def __init__(self, z_dim=100, img_channels=3, feature_maps=64):
+        super().__init__()
+        self.gen = nn.Sequential(
+            nn.ConvTranspose2d(z_dim, feature_maps * 8, 4, 1, 0, bias=False),
+            nn.BatchNorm2d(feature_maps * 8),
+            nn.ReLU(True),
+
+            nn.ConvTranspose2d(
+                feature_maps * 8, feature_maps * 4, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(feature_maps * 4),
+            nn.ReLU(True),
+
+            nn.ConvTranspose2d(
+                feature_maps * 4, feature_maps * 2, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(feature_maps * 2),
+            nn.ReLU(True),
+
+            nn.ConvTranspose2d(
+                feature_maps * 2, img_channels, 4, 2, 1, bias=False),
             nn.Tanh()
         )
-        self.img_size = img_size
 
-    def forward(self, noise, labels):
-        x = torch.cat((noise, labels), dim=1)
-        x = self.fc(x)
-        return x.view(-1, 3, self.img_size, self.img_size)
+    def forward(self, x):
+        return self.gen(x.view(x.size(0), x.size(1), 1, 1))
 
 
 class Discriminator(nn.Module):
-    def __init__(self, class_dim=2, img_size=128):
-        super(Discriminator, self).__init__()
-        self.fc = nn.Sequential(
-            nn.Linear(3 * img_size * img_size + class_dim, 512),
-            nn.LeakyReLU(0.2),
-            nn.Linear(512, 128),
-            nn.LeakyReLU(0.2),
-            nn.Linear(128, 1),
+    def __init__(self, img_channels=3, feature_maps=64):
+        super().__init__()
+        self.disc = nn.Sequential(
+            nn.Conv2d(img_channels, feature_maps, 4, 2, 1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Conv2d(feature_maps, feature_maps * 2, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(feature_maps * 2),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Conv2d(feature_maps * 2, feature_maps * 4, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(feature_maps * 4),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Conv2d(feature_maps * 4, 1, 4, 1, 0, bias=False),
             nn.Sigmoid()
         )
-        self.img_size = img_size
 
-    def forward(self, img, labels):
-        x = torch.cat((img.view(img.size(0), -1), labels), dim=1)
-        return self.fc(x)
+    def forward(self, x):
+        return self.disc(x)
 
 
 class GANTrainer:
