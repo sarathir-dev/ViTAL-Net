@@ -33,6 +33,7 @@ Thumbs.db
 
 # Data and logs (adjust if you DO want to track specific data/logs)
 data/
+gan_output/
 logs/
 *.log
 *.csv
