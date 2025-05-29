@@ -18,7 +18,7 @@ MODEL_SAVE_PATH = "./models/generator.pth"
 
 # Prepare Dataset
 transform = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+    transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])
 ])
@@ -50,6 +50,8 @@ for epoch in range(EPOCHS):
         noise = torch.randn(batch_size, Z_DIM).to(DEVICE)
         fake_imgs = generator(noise)
 
+        # print(f"[DEBUG] Fake image shape: {fake_imgs.shape}")
+
         discriminator.zero_grad()
         output_real = discriminator(real_imgs).view(-1)
         loss_real = criterion(output_real, torch.full(
@@ -62,6 +64,9 @@ for epoch in range(EPOCHS):
         loss_d = loss_real + loss_fake
         loss_d.backward()
         opt_d.step()
+
+        # print(
+        #     f"[DEBUG] real_imgs shape: {real_imgs.shape}, fake_imgs shape: {fake_imgs.shape}")
 
         # === Train Generator ===
         generator.zero_grad()

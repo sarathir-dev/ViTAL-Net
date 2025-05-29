@@ -8,22 +8,28 @@ class Generator(nn.Module):
     def __init__(self, z_dim=100, img_channels=3, feature_maps=64):
         super().__init__()
         self.gen = nn.Sequential(
-            nn.ConvTranspose2d(z_dim, feature_maps * 8, 4, 1, 0, bias=False),
+            nn.ConvTranspose2d(z_dim, feature_maps * 8, 4, 1,
+                               0, bias=False),   # 1x1 -> 4x4
             nn.BatchNorm2d(feature_maps * 8),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(
-                feature_maps * 8, feature_maps * 4, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(feature_maps * 8, feature_maps * 4,
+                               4, 2, 1, bias=False),  # 4x4 -> 8x8
             nn.BatchNorm2d(feature_maps * 4),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(
-                feature_maps * 4, feature_maps * 2, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(feature_maps * 4, feature_maps * 2,
+                               4, 2, 1, bias=False),  # 8x8 -> 16x16
             nn.BatchNorm2d(feature_maps * 2),
             nn.ReLU(True),
 
-            nn.ConvTranspose2d(
-                feature_maps * 2, img_channels, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(feature_maps * 2, feature_maps,
+                               4, 2, 1, bias=False),  # 16x16 -> 32x32
+            nn.BatchNorm2d(feature_maps),
+            nn.ReLU(True),
+
+            nn.ConvTranspose2d(feature_maps, img_channels, 4,
+                               2, 1, bias=False),  # 32x32 -> 64x64
             nn.Tanh()
         )
 
@@ -32,21 +38,21 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, img_channels=3, feature_maps=64):
-        super().__init__()
+    def __init__(self):
+        super(Discriminator, self).__init__()
         self.disc = nn.Sequential(
-            nn.Conv2d(img_channels, feature_maps, 4, 2, 1, bias=False),
+            nn.Conv2d(3, 64, 4, 2, 1),      # 64x64 -> 32x32
             nn.LeakyReLU(0.2, inplace=True),
-
-            nn.Conv2d(feature_maps, feature_maps * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(feature_maps * 2),
+            nn.Conv2d(64, 128, 4, 2, 1),    # 32x32 -> 16x16
+            nn.BatchNorm2d(128),
             nn.LeakyReLU(0.2, inplace=True),
-
-            nn.Conv2d(feature_maps * 2, feature_maps * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(feature_maps * 4),
+            nn.Conv2d(128, 256, 4, 2, 1),   # 16x16 -> 8x8
+            nn.BatchNorm2d(256),
             nn.LeakyReLU(0.2, inplace=True),
-
-            nn.Conv2d(feature_maps * 4, 1, 4, 1, 0, bias=False),
+            nn.Conv2d(256, 512, 4, 2, 1),   # 8x8 -> 4x4
+            nn.BatchNorm2d(512),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(512, 1, 4),           # 4x4 -> 1x1
             nn.Sigmoid()
         )
 
