@@ -8,7 +8,7 @@ from PIL import Image
 from models.gan_generator import Generator
 from config import DEVICE, DATA_PATH, BATCH_SIZE
 
-GAN_OUTPUT_DIR = ""
+GAN_OUTPUT_DIR = "./gan_output"
 
 
 class CustomImageDataset(Dataset):
@@ -21,9 +21,11 @@ class CustomImageDataset(Dataset):
             label_dir = os.path.join(root_dir, label_name)
             label = 1 if label_name == 'fight' else 0
 
-            for file in os.listdir(label_dir):
-                if file.endswith('.jpg') or file.endswith('.png'):
-                    self.samples.append((os.path.join(label_dir, file), label))
+            # Recursively walk through all subdirectories
+            for root, _, files in os.walk(label_dir):
+                for file in files:
+                    if file.endswith('.jpg') or file.endswith('.png'):
+                        self.samples.append((os.path.join(root, file), label))
 
     def __len__(self):
         return len(self.samples)
