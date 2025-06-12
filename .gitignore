@@ -38,3 +38,4 @@ logs/
 *.log
 *.csv
 lib64
+models/generator.pth
