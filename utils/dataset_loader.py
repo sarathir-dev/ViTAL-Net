@@ -10,15 +10,15 @@ import random
 
 
 class ViolenceVideoDataset(Dataset):
-    def __init__(self, root_dir, seq_len=16, image_size=(128, 128), mode='train'):
-        self.root_dir = root_dir
+    def __init__(self, data_path, seq_len=16, image_size=(128, 128), mode='train'):
+        self.data_path = data_path
         self.seq_len = seq_len
         self.image_size = image_size
         self.mode = mode
         self.samples = []
 
         for label_name in ['fight', 'nonfight']:
-            label_dir = os.path.join(root_dir, label_name)
+            label_dir = os.path.join(data_path, label_name)
             label = 1 if label_name == 'fight' else 0
 
             for video_folder in os.listdir(label_dir):

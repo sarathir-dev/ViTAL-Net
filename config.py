@@ -3,7 +3,7 @@
 import os
 import torch
 
-DATA_PATH = "./data/violence_dataset/hockey_fight"
+DATA_PATH = "/home/sarathi/Documents/Projects/violence-detection/data/violence_dataset/hockey_fight"
 BATCH_SIZE = 16
 NUM_EPOCHS = 30
 LR = 1e-4

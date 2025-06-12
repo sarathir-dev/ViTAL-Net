@@ -25,12 +25,24 @@ def evaluate_model(model, dataloader, device):
             all_labels.extend(labels.cpu().numpy())
 
     acc = accuracy_score(all_labels, all_preds)
-    cm = confusion_matrix(all_labels, all_preds)
-    report = classification_report(all_labels, all_preds, target_names=[
-                                   "NonViolence", "Violence"])
+
+    # Ensure confusion matrix handles both classes even if one is missing
+    cm = confusion_matrix(all_labels, all_preds, labels=[0, 1])
+    report = classification_report(
+        all_labels,
+        all_preds,
+        labels=[0, 1],
+        target_names=["NonViolence", "Violence"],
+        zero_division=0
+    )
 
     print("Accuracy:", acc)
     print("Classification Report:\n", report)
+
+    unique_labels = set(all_labels)
+    if len(unique_labels) < 2:
+        print(
+            f"Warning: Only class {list(unique_labels)[0]} present in validation set.")
 
     plt.figure(figsize=(5, 4))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
@@ -39,6 +51,8 @@ def evaluate_model(model, dataloader, device):
     plt.title("Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("True")
+    plt.tight_layout()
+    plt.savefig("Confusion Matrix.png")
     plt.show()
 
     return acc
